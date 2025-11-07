@@ -89,6 +89,7 @@
 						},
 						"url": {
 							"raw": "{{baseUrl}}/api-social/register",
+							"protocol": "http",
 							"host": [
 								"{{baseUrl}}"
 							],
