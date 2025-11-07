@@ -57,7 +57,7 @@ jobs:
 
     - name: Run Postman collection
       run: |
-        newman run ../../postman/API-SOCIAL-collection.json \
-          --environment ../../postman/API-SOCIAL-environment.json \
+        newman run postman/API-SOCIAL-collection.json \
+          --environment postman/API-SOCIAL-environment.json \
           --reporters cli,junit \
-          --reporter-junit-export ../../newman-report.xml
+          --reporter-junit-export newman-report.xml
