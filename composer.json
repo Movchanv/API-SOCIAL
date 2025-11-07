@@ -3,13 +3,10 @@
     "description": "API REST pour un mini réseau social",
     "require": {
         "firebase/php-jwt": "^6.11",
-        "bramus/router": "^1.6",
-        "phpunit/phpunit": "^11.5"
+        "bramus/router": "^1.6"
     },
     "require-dev": {
-        "firebase/php-jwt": "^6.11",
-        "bramus/router": "^1.6",
-        "phpunit/phpunit": "^11.5"
+        "phpunit/phpunit": "^10.0"
     },
     "autoload": {
         "psr-4": {
