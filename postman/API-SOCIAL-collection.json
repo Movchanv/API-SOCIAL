@@ -150,10 +150,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost/api-social/login",
+							"raw": "{{baseUrl}}/api-social/login",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"api-social",
@@ -233,10 +233,10 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost/api-social/posts",
+							"raw": "{{baseUrl}}/api-social/posts",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"api-social",
@@ -285,10 +285,10 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost/api-social/posts",
+							"raw": "{{baseUrl}}/api-social/posts",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"api-social",
@@ -310,10 +310,10 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost/api-social/posts?page=2&perPage=2",
+							"raw": "{{baseUrl}}/api-social/posts?page=2&perPage=2",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"api-social",
@@ -350,10 +350,10 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost/api-social/posts/like/{{random_post_id}}",
+							"raw": "{{baseUrl}}/api-social/posts/like/{{random_post_id}}",
 							"protocol": "http",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"api-social",
