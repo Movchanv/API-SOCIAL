@@ -1,0 +1,372 @@
+{
+	"info": {
+		"_postman_id": "ce3d24d7-6108-42e2-98bb-cc679f2e8036",
+		"name": "API-SOCIAL",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "43198581"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function randomString(length) { \r",
+									"    let chars = \"abcdefghijklmnopqrstuvwxyz\"; \r",
+									"    let result = \"\"; \r",
+									"    for (let i = 0; i < length; i++) { \r",
+									"        result += chars.charAt(Math.floor(Math.random() * chars.length)); \r",
+									"    } \r",
+									"    return result; \r",
+									"} \r",
+									"\r",
+									"let name = \"User \" + randomString(5); \r",
+									"let email = randomString(8) + \"@example.com\"; \r",
+									"let password = randomString(10);\r",
+									"\r",
+									"pm.environment.set(\"temp_name\", name); \r",
+									"pm.environment.set(\"temp_email\", email); \r",
+									"pm.environment.set(\"temp_password\", password); \r",
+									"\r",
+									"console.log(\"Nom généré :\", name); \r",
+									"console.log(\"Email généré :\", email); \r",
+									"console.log(\"Password généré :\", password);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {\r",
+									"    let jsonData;\r",
+									"    try {\r",
+									"        jsonData = pm.response.json();\r",
+									"\r",
+									"        if (jsonData.email && jsonData.password) {\r",
+									"            pm.environment.set(\"temp_email\", jsonData.email);\r",
+									"            pm.environment.set(\"temp_password\", jsonData.password);\r",
+									"\r",
+									"            console.log(\"Email sauvegardé :\", jsonData.email);\r",
+									"            console.log(\"Password sauvegardé :\", jsonData.password);\r",
+									"        } else {\r",
+									"            console.log(\"Email ou password absent dans la réponse, rien à sauvegarder\");\r",
+									"        }\r",
+									"    } catch (e) {\r",
+									"        console.log(\"La réponse n'est pas un JSON valide :\", e);\r",
+									"    }\r",
+									"} else {\r",
+									"    console.log(\"La réponse n'a pas le code 200, code reçu :\", pm.response.code);\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": {{temp_name}},\r\n    \"email\": {{temp_email}},\r\n    \"password\": {{temp_password}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api-social/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api-social",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.headers.get(\"Content-Type\")?.includes(\"application/json\") && pm.response.code === 200) {\r",
+									"    let jsonData = pm.response.json();\r",
+									"\r",
+									"    pm.test(\"Token is present\", function () {\r",
+									"        pm.expect(jsonData).to.have.property(\"token\");\r",
+									"    });\r",
+									"\r",
+									"    pm.environment.set(\"token\", jsonData.token);\r",
+									"} else {\r",
+									"    console.log(\"Login failed or response is not JSON, skipping token extraction\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"{{temp_email}}\",\r\n  \"password\": \"{{temp_password}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api-social/login",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api-social",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Posts",
+			"item": [
+				{
+					"name": "Créer un post",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function randomTitle() {\r",
+									"    const words = [\"Sécurisé\", \"Test\", \"Automatique\", \"Dynamique\", \"Aléatoire\", \"Rapide\", \"Intelligent\", \"Créatif\"];\r",
+									"    return \"Mon post \" + words[Math.floor(Math.random() * words.length)] + \" \" + Math.floor(Math.random() * 100);\r",
+									"}\r",
+									"\r",
+									"function randomContent() {\r",
+									"    const phrases = [\r",
+									"        \"Voici un contenu généré automatiquement pour les tests.\",\r",
+									"        \"Ce texte a été produit dynamiquement dans Postman.\",\r",
+									"        \"L'objectif est de simuler un post réaliste avec des données uniques.\",\r",
+									"        \"Chaque exécution génère un contenu différent, comme le ferait faker.js.\",\r",
+									"        \"Ceci est un exemple de contenu de post pour les tests d'API.\"\r",
+									"    ];\r",
+									"    let content = \"\";\r",
+									"    for (let i = 0; i < 3; i++) {\r",
+									"        content += phrases[Math.floor(Math.random() * phrases.length)] + \" \";\r",
+									"    }\r",
+									"    return content.trim();\r",
+									"}\r",
+									"\r",
+									"let title = randomTitle();\r",
+									"let content = randomContent();\r",
+									"\r",
+									"pm.environment.set(\"temp_title\", title);\r",
+									"pm.environment.set(\"temp_content\", content);\r",
+									"\r",
+									"console.log(\"Titre généré :\", title);\r",
+									"console.log(\"Contenu généré :\", content);\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"title\": \"{{temp_title}}\",\r\n  \"content\": \"{{temp_content}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/api-social/posts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api-social",
+								"posts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Postes",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let jsonData = pm.response.json();\r",
+									"\r",
+									"if (jsonData.posts && jsonData.posts.length > 0) {\r",
+									"    let randomIndex = Math.floor(Math.random() * jsonData.posts.length);\r",
+									"    let randomPost = jsonData.posts[randomIndex];\r",
+									"\r",
+									"    let postId = randomPost.id;\r",
+									"\r",
+									"    pm.environment.set(\"random_post_id\", postId);\r",
+									"\r",
+									"    console.log(\"ID du post aléatoire :\", postId);\r",
+									"} else {\r",
+									"    console.log(\"Aucun post trouvé dans la réponse.\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost/api-social/posts",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api-social",
+								"posts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get postes Pages",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost/api-social/posts?page=2&perPage=2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api-social",
+								"posts"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								},
+								{
+									"key": "perPage",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Search with like",
+			"item": [
+				{
+					"name": "Like",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost/api-social/posts/like/{{random_post_id}}",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"api-social",
+								"posts",
+								"like",
+								"{{random_post_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
