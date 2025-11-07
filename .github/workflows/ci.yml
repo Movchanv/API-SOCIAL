@@ -25,39 +25,48 @@ jobs:
           --health-retries=3
 
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-    - name: Set up PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.2'
-        extensions: pdo_mysql, mbstring, json
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_mysql, mbstring, json
 
-    - name: Install Composer dependencies
-      run: composer install --no-dev --optimize-autoloader
+      - name: Install Composer dependencies
+        run: composer install --no-dev --optimize-autoloader
 
-    - name: Wait for MySQL
-      run: |
-        echo "Waiting for MySQL to be ready..."
-        for i in {1..20}; do
-          mysqladmin ping -h 127.0.0.1 -uroot -proot >/dev/null 2>&1 && break
-          sleep 3
-        done
+      - name: Wait for MySQL
+        run: |
+          echo "Waiting for MySQL to be ready..."
+          for i in {1..20}; do
+            mysqladmin ping -h 127.0.0.1 -uroot -proot >/dev/null 2>&1 && break
+            sleep 3
+          done
 
-    - name: Run migrations / create tables
-      run: |
-        mysql -h 127.0.0.1 -uroot -proot social_api < database/schema.sql
+      - name: Run migrations / create tables
+        run: |
+          if [ -f database/schema.sql ]; then
+            mysql -h 127.0.0.1 -uroot -proot social_api < database/schema.sql
+          else
+            echo "database/schema.sql not found"
+            exit 1
+          fi
 
-    - name: Start PHP server
-      run: php -S 127.0.0.1:8000 -t ./ & 
+      - name: Start PHP server
+        run: |
+          php -S 127.0.0.1:8000 -t ./ &
+          echo "Waiting 5 seconds for PHP server to start..."
+          sleep 5
 
-    - name: Install Newman
-      run: npm install -g newman
+      - name: Install Newman
+        run: npm install -g newman
 
-    - name: Run Postman collection
-      run: |
-        newman run postman/API-SOCIAL-collection.json \
-          --environment postman/API-SOCIAL-environment.json \
-          --reporters cli,junit \
-          --reporter-junit-export newman-report.xml
+      - name: Run Postman collection
+        run: |
+          newman run postman/API-SOCIAL-collection.json \
+            --environment postman/API-SOCIAL-environment.json \
+            --reporters cli,junit \
+            --reporter-junit-export newman-report.xml \
+            --global-var "baseUrl=http://127.0.0.1:8000"
