@@ -80,7 +80,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": {{temp_name}},\r\n    \"email\": {{temp_email}},\r\n    \"password\": {{temp_password}}\r\n}",
+							"raw": "{\r\n    \"name\": \"{{temp_name}}\",\r\n    \"email\": \"{{temp_email}}\",\r\n    \"password\": \"{{temp_password}}\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -88,10 +88,9 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost/api-social/register",
-							"protocol": "http",
+							"raw": "{{baseUrl}}/api-social/register",
 							"host": [
-								"localhost"
+								"{{baseUrl}}"
 							],
 							"path": [
 								"api-social",
