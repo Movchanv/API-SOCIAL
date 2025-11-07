@@ -1,4 +1,4 @@
-name: CI
+name: API-social CI
 
 on:
   push:
@@ -12,7 +12,7 @@ jobs:
 
     services:
       mysql:
-        image: mysql:8
+        image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: root
           MYSQL_DATABASE: social_api
@@ -25,30 +25,39 @@ jobs:
           --health-retries=3
 
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+    - name: Checkout repo
+      uses: actions/checkout@v3
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.2
-          extensions: pdo_mysql, mbstring, json
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: pdo_mysql, mbstring, json
 
-      - name: Install Composer dependencies
-        run: composer install
+    - name: Install Composer dependencies
+      run: composer install --no-dev --optimize-autoloader
 
-      - name: Wait for MySQL
-        run: sleep 15
+    - name: Wait for MySQL
+      run: |
+        echo "Waiting for MySQL to be ready..."
+        for i in {1..20}; do
+          mysqladmin ping -h 127.0.0.1 -uroot -proot >/dev/null 2>&1 && break
+          sleep 3
+        done
 
-      - name: Set up database
-        run: |
-          mysql -h 127.0.0.1 -u root -proot -e "source ./database.sql"
+    - name: Run migrations / create tables
+      run: |
+        mysql -h 127.0.0.1 -uroot -proot api_social < database/schema.sql
 
-      - name: Start PHP server
-        run: php -S 0.0.0.0:8000 -t public &
+    - name: Start PHP server
+      run: php -S 127.0.0.1:8000 -t ./ & 
 
-      - name: Wait for server
-        run: sleep 5
+    - name: Install Newman
+      run: npm install -g newman
 
-      - name: Run Postman Collection
-        run: newman run postman/collection.json -e postman/environment.json
+    - name: Run Postman collection
+      run: |
+        newman run ./postman/API-SOCIAL-collection.json \
+          --environment ./postman/API-SOCIAL-environment.json \
+          --reporters cli,junit \
+          --reporter-junit-export ./newman-report.xml
