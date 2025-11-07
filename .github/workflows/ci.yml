@@ -47,7 +47,7 @@ jobs:
 
     - name: Run migrations / create tables
       run: |
-        mysql -h 127.0.0.1 -uroot -proot api_social < database/schema.sql
+        mysql -h 127.0.0.1 -uroot -proot social_api < database/schema.sql
 
     - name: Start PHP server
       run: php -S 127.0.0.1:8000 -t ./ & 
