@@ -1,0 +1,25 @@
+{
+    "name": "zazuk/api-social",
+    "description": "API REST pour un mini réseau social",
+    "require": {
+        "firebase/php-jwt": "^6.11",
+        "bramus/router": "^1.6",
+        "phpunit/phpunit": "^11.5"
+    },
+    "require-dev": {
+        "firebase/php-jwt": "^6.11",
+        "bramus/router": "^1.6",
+        "phpunit/phpunit": "^11.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Zazuk\\ApiSocial\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Vlad",
+            "email": "zazukavlad@gmail.com"
+        }
+    ]
+}
